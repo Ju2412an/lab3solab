@@ -114,7 +114,7 @@ Dir. heap_var       : 0x5f4bd266a2a0
 7ffc14fe6000-7ffc14fe8000 r-xp [vdso]
 ```
 
-![Captura de mem_map y /proc/maps](dev/img/mem_map.png)
+![Captura de mem_map y /proc/maps](img/mem_map.png)
 
 ### Pregunta 1.3.1 — Permisos r/w/x/p de cada región
 
@@ -177,7 +177,7 @@ Al ejecutar dos veces `./mem_map` en simultáneo se obtienen direcciones **muy p
 ==393== ERROR SUMMARY: 0 errors from 0 contexts
 ```
 
-![Valgrind sobre heap_demo](dev/img/heap_demo.png)
+![Valgrind sobre heap_demo](img/heap_demo.png)
 
 1. **No reporta errores ni fugas.** El mensaje `"All heap blocks were freed"` indica que para cada `malloc`/`realloc` hubo una liberación equivalente, y ninguno de los bloques quedó "perdido" al terminar el proceso. Note que son **3 allocs, 3 frees**: `malloc` inicial, el `realloc` (cuenta como malloc + free internamente cuando hay reubicación) y el bloque final que se libera.
 2. Se usa `sizeof(int)` en lugar de `4` por **portabilidad**. Aunque en x86_64 `int` mide 4 bytes, en plataformas como AVR (8 bits) `int` puede medir 2 bytes; si el código se compilara allí con `4`, `malloc(n*4)` desperdiciaría memoria o, peor, en una arquitectura de 64 bits con `int` de 8 bytes se quedaría corto. `sizeof(int)` se calcula en compilación y siempre devuelve el tamaño correcto.
@@ -198,7 +198,7 @@ Invalid read of size 4    at buggy_mem.c:52   <- ERROR 3: use-after-free
    alloc'd at buggy_mem.c:41                  (q = malloc(100))
 ```
 
-![Valgrind sobre buggy_mem](dev/img/buggy_mem.png)
+![Valgrind sobre buggy_mem](img/buggy_mem.png)
 
 | Mensaje de Valgrind                  | Error correspondiente |
 | :----------------------------------- | :-------------------- |
@@ -223,7 +223,7 @@ Y Valgrind ahora confirma:
 ==397== ERROR SUMMARY: 0 errors from 0 contexts
 ```
 
-![Valgrind sobre buggy_mem_fixed](dev/img/buggy_mem_fixed.png)
+![Valgrind sobre buggy_mem_fixed](img/buggy_mem_fixed.png)
 
 3. **Consecuencias de un use-after-free en el mundo real:**
    - **Estabilidad**: el bloque liberado puede ser reasignado por otro `malloc`; al leer/escribir, se corrompe el estado de un objeto distinto, causando crashes erráticos lejos del código culpable y muy difíciles de diagnosticar.
@@ -358,7 +358,7 @@ VA=0xC8  VPN=12  Offset= 8  -> PFN= 6  PA=0x68
 VA=0xF0  VPN=15  Offset= 0  -> PAGE FAULT (pagina no presente)
 ```
 
-![paging_sim](dev/img/paging_sim.png)
+![paging_sim](img/paging_sim.png)
 
 1. La salida confirma el cálculo `PA = (PFN << 4) | offset`. Por ejemplo, VA=0x35 da VPN=3 (`page_table[3]=2`), offset=5, PA = (2<<4)|5 = 0x25.
 2. **0x10 → page fault** porque `page_table[1] = -1` (página no presente). **0x0xA3 → traduce normal** (`page_table[10] = 4`) a PA=0x43; el enunciado pareciera sugerir que ambas fallan, pero al inspeccionar la tabla solo VPN=1 y VPN=15 están marcadas como ausentes — no VPN=10. **0xF0 → page fault** porque `page_table[15] = -1`. Ante un page fault, el SO real:
@@ -448,7 +448,7 @@ malloc( 256) -> 0x59960d20ed20       (delta 0x210)
 malloc( 128) -> 0x59960d20ee30       (delta 0x110)
 ```
 
-![fragmentation](dev/img/fragmentation.png)
+![fragmentation](img/fragmentation.png)
 
 1. **¿Son consecutivas?** Casi: cada bloque está separado del anterior por **`tamaño + ~16 B de cabecera`** (la cabecera de chunk de glibc almacena el tamaño y bits de control). Excepción: el primer `malloc(16)` usa el `tcache` (per-thread cache de objetos pequeños) que puede estar mapeado en una arena diferente, por eso el salto inicial es grande.
 2. **`malloc(1500)` tiene éxito**. Aunque liberamos 5 bloques pares (16 + 64 + 256 + 1024 + 256 = 1616 B liberados), no necesariamente había 1500 B contiguos hasta que glibc ejecuta su política: (a) consulta sus *bins* de bloques libres, (b) si el más grande no alcanza, **fusiona contiguos** (coalescing), (c) si aún no alcanza, **extiende el heap** con `sbrk()` o `mmap()`. En este caso muy probablemente la asignación se sirve extendiendo el heap, ya que el tcache solo guarda chunks pequeños.
@@ -471,7 +471,7 @@ Promedio de **3 corridas** del benchmark (`tlb_locality.c`), arreglo de 16 MB (4
 | 3         |  18.76 ms  |  82.98 ms |  4.4× |
 | **Promedio** | **16.4 ms** | **105.6 ms** | **6.4×** |
 
-![tlb_locality](dev/img/tlb_locality.png)
+![tlb_locality](img/tlb_locality.png)
 
 1. **El acceso aleatorio es ~6× más lento que el secuencial** (el factor exacto depende del estado del TLB, del prefetcher y de las cachés L1/L2/L3, pero la diferencia es siempre del orden de 5–15×).
 
@@ -565,7 +565,7 @@ make test
 
 Última corrida: **35 / 35** casos pasan en Ubuntu 24/WSL.
 
-![Banco de pruebas: 35/35 PASA](dev/img/test_completo.png)
+![Banco de pruebas: 35/35 PASA](img/test_completo.png)
 
 | #  | Caso                                | Programa            | Verifica                                            |
 | :- | :----------------------------------- | :----------------- | :-------------------------------------------------- |
