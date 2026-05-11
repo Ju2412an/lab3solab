@@ -1,0 +1,42 @@
+# Binarios compilados (siete programas — comparten nombre con sus .c)
+mem_map
+heap_demo
+buggy_mem
+buggy_mem_fixed
+base_bounds
+paging_sim
+fragmentation
+tlb_locality
+
+# Objetos y ejecutables genéricos de C
+*.o
+*.obj
+*.a
+*.out
+*.exe
+
+# Artefactos residuales de pruebas manuales
+salida.txt
+out.txt
+out2.txt
+err.txt
+vg_out.txt
+batch_out.txt
+a
+b
+
+# Archivos de editor / IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# Archivos del sistema operativo
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# Core dumps (Valgrind, segfaults)
+core
+vgcore.*
